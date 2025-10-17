@@ -323,6 +323,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         throw new Error('MSW no está funcionando, usando simulación local');
       }
 
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const result = await response.json();
       
       addLog({
@@ -364,8 +368,12 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
       
-      // Si MSW falla, simular facturación localmente
-      if (errorMessage.includes('MSW no está funcionando')) {
+      console.log('🚨 Error en facturar:', errorMessage);
+      
+      // Si MSW falla o hay error de JSON, simular facturación localmente
+      if (errorMessage.includes('MSW no está funcionando') || 
+          errorMessage.includes('Unexpected end of JSON input') ||
+          errorMessage.includes('Failed to execute')) {
         console.log('🔄 Simulando facturación localmente');
         
         // Validar que la recaudación existe
