@@ -3,13 +3,12 @@ import { Modal } from './ui/Modal';
 import { Button } from './ui/Button';
 import { Card, CardContent } from './ui/Card';
 import { Receipt, Calendar, DollarSign, Building2, FileText, Printer, ExternalLink } from 'lucide-react';
-import { Gasto, Entidad } from '../types';
+import { Gasto } from '../types';
 
 interface DetalleGastosModalProps {
   isOpen: boolean;
   onClose: () => void;
   gastos: Gasto[];
-  entidades: Entidad[];
   titulo: string;
   entidadId?: string;
 }
@@ -18,7 +17,6 @@ export function DetalleGastosModal({
   isOpen,
   onClose,
   gastos,
-  entidades,
   titulo,
   entidadId
 }: DetalleGastosModalProps) {

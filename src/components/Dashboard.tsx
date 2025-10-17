@@ -275,7 +275,6 @@ export function Dashboard() {
         isOpen={modalGastos.isOpen}
         onClose={() => setModalGastos({ isOpen: false, titulo: '' })}
         gastos={state.data.gastos}
-        entidades={state.data.entidades}
         titulo={modalGastos.titulo}
         entidadId={modalGastos.entidadId}
       />
