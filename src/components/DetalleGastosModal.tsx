@@ -34,10 +34,6 @@ export function DetalleGastosModal({
     }
   }, [isOpen, gastos, entidadId]);
 
-  const getEntidadNombre = (entidadId: string) => {
-    const entidad = entidades.find(e => e.id === entidadId);
-    return entidad ? entidad.nombre : 'CUIT no encontrado';
-  };
 
   const totalGastos = gastosFiltrados.reduce((sum, gasto) => sum + (gasto.importe || gasto.monto || 0), 0);
 
@@ -88,7 +84,7 @@ export function DetalleGastosModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} title={titulo} size="xl">
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
@@ -226,7 +222,7 @@ export function DetalleGastosModal({
                         </Button>
                         {gasto.pdfUrl && (
                           <Button
-                            variant="outline"
+                            variant="secondary"
                             size="sm"
                             onClick={() => window.open(gasto.pdfUrl, '_blank')}
                             className="flex items-center space-x-1"
