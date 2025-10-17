@@ -324,6 +324,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       }
 
       if (!response.ok) {
+        // Si es 404, probablemente MSW no está funcionando
+        if (response.status === 404) {
+          throw new Error('MSW no está funcionando, usando simulación local');
+        }
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
@@ -373,7 +377,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       // Si MSW falla o hay error de JSON, simular facturación localmente
       if (errorMessage.includes('MSW no está funcionando') || 
           errorMessage.includes('Unexpected end of JSON input') ||
-          errorMessage.includes('Failed to execute')) {
+          errorMessage.includes('Failed to execute') ||
+          errorMessage.includes('HTTP 404')) {
         console.log('🔄 Simulando facturación localmente');
         
         // Validar que la recaudación existe
@@ -395,16 +400,21 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           return false;
         }
 
+        // Generar datos realistas para la factura
+        const facturaId = state.data.facturas.length + 1;
+        const caeFake = Math.floor(Math.random() * 900000000000) + 100000000000;
+        const vtoCae = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        
         // Crear factura simulada
         const nuevaFactura: Factura = {
-          id: `F-${state.data.facturas.length + 1}`,
+          id: `F-${facturaId.toString().padStart(3, '0')}`,
           entidadId: request.entidadId,
           recaudacionId: request.recaudacionId,
           monto: request.monto,
-          caeFake: Math.floor(Math.random() * 900000000000) + 100000000000 + "",
-          vtoCaeFake: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          nroComprobante: `0001-${(state.data.facturas.length + 1).toString().padStart(8, '0')}`,
-          pdfFakeUrl: `/pdfs/factura-${state.data.facturas.length + 1}.pdf`,
+          caeFake: caeFake.toString(),
+          vtoCaeFake: vtoCae.toISOString().split('T')[0],
+          nroComprobante: `0001-${facturaId.toString().padStart(8, '0')}`,
+          pdfFakeUrl: `/pdfs/factura-${facturaId}.pdf`,
           fechaEmision: new Date().toISOString().split('T')[0]
         };
 
@@ -457,6 +467,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           detail: { factura: nuevaFactura }
         }));
         
+        console.log('✅ Facturación simulada exitosa:', nuevaFactura);
         return true;
       }
       
