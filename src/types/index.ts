@@ -50,9 +50,14 @@ export interface Gasto {
   entidadId: string;
   concepto: string;
   monto: number;
+  importe: number;
   fecha: string;
   facturaA: string;
+  nroComprobante: string;
   puntoRecaudacion: string;
+  cuitEmisor: string;
+  nombreEmisor: string;
+  pdfUrl?: string;
 }
 
 export interface GastosPorEntidad {

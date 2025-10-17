@@ -7,6 +7,7 @@ import { PuntoRecaudacionCard } from './PuntoRecaudacionCard';
 import { GastosCard } from './GastosCard';
 import { GastoEntidadCard } from './GastoEntidadCard';
 import { DetalleRecaudacionModal } from './DetalleRecaudacionModal';
+import { DetalleGastosModal } from './DetalleGastosModal';
 import { RefreshCw, Download, RotateCcw, Settings } from 'lucide-react';
 import { useDashboard } from '../context/DashboardContext';
 import { Entidad, PuntoRecaudacion } from '../types';
@@ -18,7 +19,14 @@ export function Dashboard() {
     tipo: 'recaudacion' | 'entidad' | 'punto';
     titulo: string;
     puntoId?: string;
+    entidadId?: string;
   }>({ isOpen: false, tipo: 'recaudacion', titulo: '' });
+
+  const [modalGastos, setModalGastos] = useState<{
+    isOpen: boolean;
+    titulo: string;
+    entidadId?: string;
+  }>({ isOpen: false, titulo: '' });
 
   const handleRefreshARCA = async () => {
     await fetchFacturacionARCA();
@@ -28,7 +36,7 @@ export function Dashboard() {
     setModalDetalle({
       isOpen: true,
       tipo: 'recaudacion',
-      titulo: 'Detalle — Recaudación General'
+      titulo: 'Detalle — Ingresos Generales'
     });
   };
 
@@ -36,8 +44,23 @@ export function Dashboard() {
     setModalDetalle({
       isOpen: true,
       tipo: 'punto',
-      titulo: `Detalle — Recaudación — Punto: ${punto.nombre}`,
+      titulo: `Detalle — Ingresos — Punto: ${punto.nombre}`,
       puntoId: punto.id
+    });
+  };
+
+  const handleVerDetalleGastos = () => {
+    setModalGastos({
+      isOpen: true,
+      titulo: 'Detalle — Gastos Totales'
+    });
+  };
+
+  const handleVerDetalleGastosEntidad = (entidad: Entidad) => {
+    setModalGastos({
+      isOpen: true,
+      titulo: `Detalle — Gastos de ${entidad.nombre}`,
+      entidadId: entidad.id
     });
   };
 
@@ -45,7 +68,8 @@ export function Dashboard() {
     setModalDetalle({
       isOpen: true,
       tipo: 'entidad',
-      titulo: `Detalle — Facturación — Entidad: ${entidad.nombre}`
+      titulo: `Detalle — Facturas Emitidas — CUIT: ${entidad.nombre}`,
+      entidadId: entidad.id
     });
   };
 
@@ -81,7 +105,7 @@ export function Dashboard() {
                 Período: {new Date().toLocaleDateString('es-AR', { 
                   year: 'numeric', 
                   month: 'long' 
-                })} {state.periodo.split('-')[0]}
+                }).replace(/^\w/, c => c.toUpperCase())}
               </p>
             </div>
             
@@ -149,12 +173,12 @@ export function Dashboard() {
         {/* Layout principal: 80% izquierda, 20% derecha */}
         <div className="flex flex-col lg:flex-row gap-3 w-full h-full">
           
-          {/* Lado izquierdo - Recaudación (80%) */}
+          {/* Lado izquierdo - Ingresos (80%) */}
           <div className="w-[80%] space-y-3">
             
-            {/* Recaudación Total */}
+            {/* Ingresos Totales */}
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-1">Recaudación Total</h2>
+              <h2 className="text-lg font-bold text-gray-900 mb-1">Ingresos Totales</h2>
               <RecaudacionCard
                 recaudaciones={state.data.recaudaciones}
                 recaudacionFacturas={state.data.recaudacionFacturas}
@@ -162,9 +186,9 @@ export function Dashboard() {
               />
             </div>
 
-            {/* Entidades */}
+            {/* CUITs */}
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-1">Entidades</h2>
+              <h2 className="text-lg font-bold text-gray-900 mb-1">CUITs</h2>
               <div className="grid grid-cols-3 gap-2">
                 {state.data.entidades.map((entidad) => {
                   const facturacion = state.data.facturacionARCA.find(f => f.cuit === entidad.cuit);
@@ -206,13 +230,14 @@ export function Dashboard() {
               <GastosCard
                 gastos={state.data.gastos}
                 gastosPorEntidad={state.data.gastosPorEntidad}
-                onClick={() => console.log('Ver detalles de gastos')}
+                totalFacturado={state.data.facturacionARCA.reduce((sum, f) => sum + f.total, 0)}
+                onClick={handleVerDetalleGastos}
               />
             </div>
 
-            {/* Gastos por Entidad - En columna */}
+            {/* Gastos por CUIT - En columna */}
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-1">Gastos por Entidad</h2>
+              <h2 className="text-lg font-bold text-gray-900 mb-1">Gastos por CUIT</h2>
               <div className="space-y-1">
                 {state.data.entidades.map((entidad) => {
                   const gastosEntidad = state.data.gastosPorEntidad.find(g => g.entidadId === entidad.id);
@@ -223,7 +248,7 @@ export function Dashboard() {
                       entidad={entidad}
                       gastosEntidad={gastosEntidad}
                       facturacionEntidad={facturacionEntidad}
-                      onClick={() => console.log('Ver gastos de entidad')}
+                      onClick={() => handleVerDetalleGastosEntidad(entidad)}
                     />
                   );
                 })}
@@ -243,6 +268,16 @@ export function Dashboard() {
         recaudacionFacturas={state.data.recaudacionFacturas}
         titulo={modalDetalle.titulo}
         puntoId={modalDetalle.puntoId}
+        entidadId={modalDetalle.entidadId}
+      />
+
+      <DetalleGastosModal
+        isOpen={modalGastos.isOpen}
+        onClose={() => setModalGastos({ isOpen: false, titulo: '' })}
+        gastos={state.data.gastos}
+        entidades={state.data.entidades}
+        titulo={modalGastos.titulo}
+        entidadId={modalGastos.entidadId}
       />
     </div>
   );

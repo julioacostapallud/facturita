@@ -2,6 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import { Building2 } from 'lucide-react';
 import { Entidad, GastosPorEntidad } from '../types';
+import { AnimatedValue } from './AnimatedValue';
 
 interface GastoEntidadCardProps {
   entidad: Entidad;
@@ -16,6 +17,13 @@ export function GastoEntidadCard({ entidad, gastosEntidad, facturacionEntidad = 
   
   // Calcular el porcentaje de gastos sobre facturación
   const porcentajeGastos = facturacionEntidad > 0 ? (totalGastos / facturacionEntidad) * 100 : 0;
+  
+  // Función para obtener el color según el porcentaje
+  const getPorcentajeColor = (porcentaje: number) => {
+    if (porcentaje < 40) return 'text-success-600';
+    if (porcentaje < 70) return 'text-warning-600';
+    return 'text-error-600';
+  };
 
   return (
     <Card 
@@ -36,9 +44,12 @@ export function GastoEntidadCard({ entidad, gastosEntidad, facturacionEntidad = 
           </div>
           {/* Porcentaje de gastos sobre facturación */}
           <div className="text-right">
-            <div className="text-lg font-bold text-error-900">
-              {porcentajeGastos.toFixed(1)}%
-            </div>
+            <AnimatedValue 
+              value={porcentajeGastos} 
+              className={`text-lg font-bold ${getPorcentajeColor(porcentajeGastos)}`}
+              suffix="%"
+              decimals={1}
+            />
             <div className="text-xs text-error-700">
               vs Facturación
             </div>
@@ -52,13 +63,18 @@ export function GastoEntidadCard({ entidad, gastosEntidad, facturacionEntidad = 
           <div className="flex justify-between items-center">
             <div>
               <p className="text-xs text-error-700">Total Gastos</p>
-              <p className="text-sm font-bold text-error-900">
-                ${totalGastos.toLocaleString()}
-              </p>
+              <AnimatedValue 
+                value={totalGastos} 
+                className="text-sm font-bold text-error-900"
+                prefix="$"
+              />
             </div>
             <div className="text-right">
               <p className="text-xs text-error-700">Facturas A</p>
-              <p className="text-sm font-bold text-error-900">{cantidadFacturasA}</p>
+              <AnimatedValue 
+                value={cantidadFacturasA} 
+                className="text-sm font-bold text-error-900"
+              />
             </div>
           </div>
           

@@ -41,12 +41,24 @@ function dashboardReducer(state: DashboardState, action: DashboardAction): Dashb
       return { ...state, data: action.payload };
     
     case 'ADD_FACTURA':
+      const { factura, recaudacionFactura } = action.payload;
+      
+      // Actualizar facturacionARCA para la entidad
+      const updatedFacturacionARCA = state.data.facturacionARCA.map(arca => {
+        const entidad = state.data.entidades.find(e => e.id === factura.entidadId);
+        if (entidad && arca.cuit === entidad.cuit) {
+          return { ...arca, total: arca.total + factura.monto };
+        }
+        return arca;
+      });
+
       return {
         ...state,
         data: {
           ...state.data,
-          facturas: [...state.data.facturas, action.payload.factura],
-          recaudacionFacturas: [...state.data.recaudacionFacturas, action.payload.recaudacionFactura]
+          facturas: [...state.data.facturas, factura],
+          recaudacionFacturas: [...state.data.recaudacionFacturas, recaudacionFactura],
+          facturacionARCA: updatedFacturacionARCA
         }
       };
     
@@ -427,24 +439,20 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
         dispatch({ type: 'ADD_FACTURA', payload: { factura: nuevaFactura, recaudacionFactura } });
         
-        // Actualizar ARCA localmente
-        const entidad = state.data.entidades.find(e => e.id === request.entidadId);
-        if (entidad) {
-          const arcaEntry = state.data.facturacionARCA.find(f => f.cuit === entidad.cuit);
-          if (arcaEntry) {
-            arcaEntry.total += request.monto;
-          }
-        }
-        
         // Actualizar gastos (simular que al facturar se generan gastos adicionales)
         const nuevoGasto: Gasto = {
           id: `G-${state.data.gastos.length + 1}`,
           entidadId: request.entidadId,
           concepto: "Comisión por Facturación",
           monto: Math.floor(request.monto * 0.02), // 2% de comisión
+          importe: Math.floor(request.monto * 0.02), // 2% de comisión
           fecha: new Date().toISOString().split('T')[0],
           facturaA: `FA-${(state.data.gastos.length + 1).toString().padStart(8, '0')}`,
-          puntoRecaudacion: "P1"
+          nroComprobante: `0001-${(state.data.gastos.length + 1).toString().padStart(8, '0')}`,
+          puntoRecaudacion: "P1",
+          cuitEmisor: "20-12345678-9",
+          nombreEmisor: "Sistema de Comisiones",
+          pdfUrl: `/pdfs/gasto-${state.data.gastos.length + 1}.pdf`
         };
         
         const gastosActualizados = [...state.data.gastos, nuevoGasto];

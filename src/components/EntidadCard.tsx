@@ -2,6 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import { Building2, TrendingUp, TrendingDown } from 'lucide-react';
 import { Entidad, FacturacionARCA } from '../types';
+import { AnimatedValue } from './AnimatedValue';
 
 interface EntidadCardProps {
   entidad: Entidad;
@@ -41,9 +42,11 @@ export function EntidadCard({ entidad, facturacion, onClick }: EntidadCardProps)
               ) : (
                 <TrendingDown className="w-4 h-4" />
               )}
-              <span className="text-sm font-semibold">
-                {delta > 0 ? '+' : ''}${Math.abs(delta).toLocaleString()}
-              </span>
+              <AnimatedValue 
+                value={Math.abs(delta)} 
+                className="text-sm font-semibold"
+                prefix={delta > 0 ? '+$' : '-$'}
+              />
             </div>
           )}
         </div>
@@ -53,9 +56,11 @@ export function EntidadCard({ entidad, facturacion, onClick }: EntidadCardProps)
         <div className="space-y-3">
           <div>
             <p className="text-sm text-primary-700 mb-1">Facturado este período</p>
-            <p className="text-xl font-bold text-primary-900">
-              ${total.toLocaleString()}
-            </p>
+            <AnimatedValue 
+              value={total} 
+              className="text-xl font-bold text-primary-900"
+              prefix="$"
+            />
           </div>
           
           <div className="space-y-2">

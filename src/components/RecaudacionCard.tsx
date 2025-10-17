@@ -2,6 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import { DollarSign, Receipt, Clock } from 'lucide-react';
 import { Recaudacion, RecaudacionFactura } from '../types';
+import { AnimatedValue } from './AnimatedValue';
 
 interface RecaudacionCardProps {
   recaudaciones: Recaudacion[];
@@ -30,7 +31,7 @@ export function RecaudacionCard({ recaudaciones, recaudacionFacturas, onClick }:
             <DollarSign className="w-5 h-5 text-white" />
           </div>
           <div>
-            <CardTitle className="text-lg text-success-900">RECAUDACIÓN TOTAL</CardTitle>
+            <CardTitle className="text-lg text-success-900">INGRESOS TOTALES</CardTitle>
             <p className="text-sm text-success-700">Período actual</p>
           </div>
         </div>
@@ -43,11 +44,13 @@ export function RecaudacionCard({ recaudaciones, recaudacionFacturas, onClick }:
             <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-success-200">
               <div className="flex items-center space-x-2">
                 <Receipt className="w-4 h-4 text-success-600" />
-                <span className="text-sm font-semibold text-success-700">Total Recaudado</span>
+                <span className="text-sm font-semibold text-success-700">Total Ingresos</span>
               </div>
-              <span className="text-lg font-bold text-success-900">
-                ${totalRecaudado.toLocaleString()}
-              </span>
+              <AnimatedValue 
+                value={totalRecaudado} 
+                className="text-lg font-bold text-success-900"
+                prefix="$"
+              />
             </div>
             
             <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-primary-200">
@@ -55,9 +58,11 @@ export function RecaudacionCard({ recaudaciones, recaudacionFacturas, onClick }:
                 <Receipt className="w-4 h-4 text-primary-600" />
                 <span className="text-sm font-semibold text-primary-700">Ya Facturado</span>
               </div>
-              <span className="text-lg font-bold text-primary-900">
-                ${totalFacturado.toLocaleString()}
-              </span>
+              <AnimatedValue 
+                value={totalFacturado} 
+                className="text-lg font-bold text-primary-900"
+                prefix="$"
+              />
             </div>
             
             <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-warning-200">
@@ -65,9 +70,11 @@ export function RecaudacionCard({ recaudaciones, recaudacionFacturas, onClick }:
                 <Clock className="w-4 h-4 text-warning-600" />
                 <span className="text-sm font-semibold text-warning-700">Pendiente</span>
               </div>
-              <span className="text-lg font-bold text-warning-900">
-                ${totalPendiente.toLocaleString()}
-              </span>
+              <AnimatedValue 
+                value={totalPendiente} 
+                className="text-lg font-bold text-warning-900"
+                prefix="$"
+              />
             </div>
           </div>
           

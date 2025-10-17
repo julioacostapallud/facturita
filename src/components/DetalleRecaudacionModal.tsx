@@ -16,6 +16,7 @@ interface DetalleRecaudacionModalProps {
   recaudacionFacturas: RecaudacionFactura[];
   titulo: string;
   puntoId?: string;
+  entidadId?: string;
 }
 
 export function DetalleRecaudacionModal({
@@ -26,10 +27,12 @@ export function DetalleRecaudacionModal({
   facturas,
   recaudacionFacturas,
   titulo,
-  puntoId
+  puntoId,
+  entidadId
 }: DetalleRecaudacionModalProps) {
   const [vistaAgrupada, setVistaAgrupada] = useState(false);
   const [recaudacionesConCalculos, setRecaudacionesConCalculos] = useState<Recaudacion[]>([]);
+  const [facturasEntidad, setFacturasEntidad] = useState<Factura[]>([]);
   const [facturarModal, setFacturarModal] = useState<{
     isOpen: boolean;
     recaudacion: Recaudacion | null;
@@ -39,9 +42,28 @@ export function DetalleRecaudacionModal({
 
   useEffect(() => {
     if (isOpen) {
-      loadRecaudaciones();
+      if (entidadId) {
+        // Cargar facturas emitidas por la entidad
+        const facturasDeEntidad = facturas.filter(f => f.entidadId === entidadId);
+        setFacturasEntidad(facturasDeEntidad);
+      } else {
+        loadRecaudaciones();
+      }
     }
-  }, [isOpen, puntoId]);
+  }, [isOpen, puntoId, entidadId, facturas]);
+
+  // Escuchar eventos de facturación para actualizar la lista
+  useEffect(() => {
+    const handleFacturacionSuccess = () => {
+      loadRecaudaciones(); // Recargar datos cuando se factura
+    };
+
+    window.addEventListener('facturacion-success', handleFacturacionSuccess);
+    
+    return () => {
+      window.removeEventListener('facturacion-success', handleFacturacionSuccess);
+    };
+  }, []);
 
   const loadRecaudaciones = async () => {
     try {
@@ -128,7 +150,7 @@ export function DetalleRecaudacionModal({
                   {vistaAgrupada ? (
                     <>
                       <ToggleRight className="w-5 h-5 text-primary-600" />
-                      <span className="text-primary-600">Por Entidad</span>
+                      <span className="text-primary-600">Por CUIT</span>
                     </>
                   ) : (
                     <>
@@ -145,97 +167,150 @@ export function DetalleRecaudacionModal({
             </Button>
           </div>
 
-          {/* Tabla de recaudaciones */}
+          {/* Tabla de recaudaciones o facturas */}
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-medium text-gray-700">ID</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-700">Fecha</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-700">Punto</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-700">Medio</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-700">Importe</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-700">Facturado</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-700">Pendiente</th>
-                  <th className="text-center py-3 px-4 font-medium text-gray-700">Acciones</th>
+                  {entidadId ? (
+                    <>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700">Nro. Comprobante</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700">Fecha</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700">CAE</th>
+                      <th className="text-right py-3 px-4 font-medium text-gray-700">Monto</th>
+                      <th className="text-center py-3 px-4 font-medium text-gray-700">Acciones</th>
+                    </>
+                  ) : (
+                    <>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700">ID</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700">Fecha</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700">Punto</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700">Medio</th>
+                      <th className="text-right py-3 px-4 font-medium text-gray-700">Importe</th>
+                      <th className="text-right py-3 px-4 font-medium text-gray-700">Facturado</th>
+                      <th className="text-right py-3 px-4 font-medium text-gray-700">Pendiente</th>
+                      <th className="text-center py-3 px-4 font-medium text-gray-700">Acciones</th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody>
-                {recaudacionesConCalculos.map((recaudacion) => {
-                  const facturasRecaudacion = getFacturasRecaudacion(recaudacion.id);
-                  const pendiente = recaudacion.pendiente || 0;
-                  
-                  return (
-                    <tr key={recaudacion.id} className="border-b border-gray-100 hover:bg-gray-50">
+                {entidadId ? (
+                  // Mostrar facturas emitidas por la entidad
+                  facturasEntidad.map((factura) => (
+                    <tr key={factura.id} className="border-b border-gray-100 hover:bg-gray-50">
                       <td className="py-3 px-4">
                         <div className="flex items-center space-x-2">
                           <Hash className="w-4 h-4 text-gray-400" />
-                          <span className="font-mono text-sm">{recaudacion.id}</span>
+                          <span className="font-mono text-sm">{factura.nroComprobante}</span>
                         </div>
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center space-x-2">
                           <Calendar className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm">{recaudacion.fecha}</span>
+                          <span className="text-sm">{factura.fechaEmision}</span>
                         </div>
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center space-x-2">
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm">{recaudacion.punto}</span>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center space-x-2">
-                          {getMedioIcon(recaudacion.medio)}
-                          <span className="text-sm">{recaudacion.medio}</span>
+                          <Receipt className="w-4 h-4 text-gray-400" />
+                          <span className="font-mono text-sm">{factura.caeFake}</span>
                         </div>
                       </td>
                       <td className="py-3 px-4 text-right">
-                        <span className="font-medium">${recaudacion.importe.toLocaleString()}</span>
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <span className="text-primary-600 font-medium">
-                          ${(recaudacion.facturado || 0).toLocaleString()}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <span className={`font-medium ${pendiente > 0 ? 'text-warning-600' : 'text-success-600'}`}>
-                          ${pendiente.toLocaleString()}
-                        </span>
+                        <span className="font-medium text-primary-600">${factura.monto.toLocaleString()}</span>
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <div className="flex items-center justify-center space-x-2">
-                          {pendiente > 0 ? (
-                            <Button
-                              size="sm"
-                              onClick={() => handleFacturar(recaudacion)}
-                            >
-                              Facturar
-                            </Button>
-                          ) : facturasRecaudacion.length > 0 ? (
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => {
-                                // Mostrar la primera factura (o la más reciente)
-                                const factura = facturasRecaudacion[0];
-                                if (factura) {
-                                  // Emitir evento para mostrar PDF
-                                  window.dispatchEvent(new CustomEvent('show-pdf', {
-                                    detail: { factura }
-                                  }));
-                                }
-                              }}
-                            >
-                              Ver Factura
-                            </Button>
-                          ) : null}
-                        </div>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => {
+                            window.dispatchEvent(new CustomEvent('show-pdf', {
+                              detail: { factura }
+                            }));
+                          }}
+                        >
+                          Ver Factura
+                        </Button>
                       </td>
                     </tr>
-                  );
-                })}
+                  ))
+                ) : (
+                  // Mostrar recaudaciones (lógica original)
+                  recaudacionesConCalculos.map((recaudacion) => {
+                    const facturasRecaudacion = getFacturasRecaudacion(recaudacion.id);
+                    const pendiente = recaudacion.pendiente || 0;
+                    
+                    return (
+                      <tr key={recaudacion.id} className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="py-3 px-4">
+                          <div className="flex items-center space-x-2">
+                            <Hash className="w-4 h-4 text-gray-400" />
+                            <span className="font-mono text-sm">{recaudacion.id}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex items-center space-x-2">
+                            <Calendar className="w-4 h-4 text-gray-400" />
+                            <span className="text-sm">{recaudacion.fecha}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex items-center space-x-2">
+                            <MapPin className="w-4 h-4 text-gray-400" />
+                            <span className="text-sm">{recaudacion.punto}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex items-center space-x-2">
+                            {getMedioIcon(recaudacion.medio)}
+                            <span className="text-sm">{recaudacion.medio}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <span className="font-medium">${recaudacion.importe.toLocaleString()}</span>
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <span className="text-primary-600 font-medium">
+                            ${(recaudacion.facturado || 0).toLocaleString()}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <span className={`font-medium ${pendiente > 0 ? 'text-warning-600' : 'text-success-600'}`}>
+                            ${pendiente.toLocaleString()}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <div className="flex items-center justify-center space-x-2">
+                            {facturasRecaudacion.length > 0 ? (
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => {
+                                  const factura = facturasRecaudacion[0];
+                                  if (factura) {
+                                    window.dispatchEvent(new CustomEvent('show-pdf', {
+                                      detail: { factura }
+                                    }));
+                                  }
+                                }}
+                              >
+                                Ver Factura
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                onClick={() => handleFacturar(recaudacion)}
+                              >
+                                Facturar
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>

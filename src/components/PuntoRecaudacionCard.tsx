@@ -2,6 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import { MapPin, DollarSign, Receipt, Clock } from 'lucide-react';
 import { PuntoRecaudacion, Recaudacion, RecaudacionFactura } from '../types';
+import { AnimatedValue } from './AnimatedValue';
 
 interface PuntoRecaudacionCardProps {
   punto: PuntoRecaudacion;
@@ -53,25 +54,31 @@ export function PuntoRecaudacionCard({
             <div className="p-2 bg-white rounded border border-secondary-200">
               <DollarSign className="w-4 h-4 text-secondary-600 mx-auto mb-1" />
               <p className="text-xs text-secondary-700 font-medium">Recaudado</p>
-              <p className="text-sm font-bold text-secondary-900">
-                ${totalRecaudado.toLocaleString()}
-              </p>
+              <AnimatedValue 
+                value={totalRecaudado} 
+                className="text-sm font-bold text-secondary-900"
+                prefix="$"
+              />
             </div>
             
             <div className="p-2 bg-white rounded border border-primary-200">
               <Receipt className="w-4 h-4 text-primary-600 mx-auto mb-1" />
               <p className="text-xs text-primary-700 font-medium">Facturado</p>
-              <p className="text-sm font-bold text-primary-900">
-                ${totalFacturado.toLocaleString()}
-              </p>
+              <AnimatedValue 
+                value={totalFacturado} 
+                className="text-sm font-bold text-primary-900"
+                prefix="$"
+              />
             </div>
             
             <div className="p-2 bg-white rounded border border-warning-200">
               <Clock className="w-4 h-4 text-warning-600 mx-auto mb-1" />
               <p className="text-xs text-warning-700 font-medium">Pendiente</p>
-              <p className="text-sm font-bold text-warning-900">
-                ${totalPendiente.toLocaleString()}
-              </p>
+              <AnimatedValue 
+                value={totalPendiente} 
+                className="text-sm font-bold text-warning-900"
+                prefix="$"
+              />
             </div>
           </div>
           
