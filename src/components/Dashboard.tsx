@@ -159,7 +159,7 @@ export function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="w-full px-4 sm:px-6 lg:px-8 py-3 h-[calc(100vh-100px)] overflow-hidden">
+      <main className="w-full px-2 sm:px-4 lg:px-8 py-2 sm:py-3 h-[calc(100vh-100px)] overflow-y-auto lg:overflow-hidden">
         {/* Error Message */}
         {state.error && (
           <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
@@ -170,15 +170,15 @@ export function Dashboard() {
           </div>
         )}
 
-        {/* Layout principal: 80% izquierda, 20% derecha */}
-        <div className="flex flex-col lg:flex-row gap-3 w-full h-full">
+        {/* Layout principal: responsive */}
+        <div className="flex flex-col lg:flex-row gap-2 sm:gap-3 w-full h-full">
           
-          {/* Lado izquierdo - Ingresos (80%) */}
-          <div className="w-[80%] space-y-3">
+          {/* Lado izquierdo - Ingresos (100% en mobile, 80% en desktop) */}
+          <div className="w-full lg:w-[80%] space-y-2 sm:space-y-3">
             
             {/* Ingresos Totales */}
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-1">Ingresos Totales</h2>
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Ingresos Totales</h2>
               <RecaudacionCard
                 recaudaciones={state.data.recaudaciones}
                 recaudacionFacturas={state.data.recaudacionFacturas}
@@ -188,8 +188,8 @@ export function Dashboard() {
 
             {/* CUITs */}
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-1">CUITs</h2>
-              <div className="grid grid-cols-3 gap-2">
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-1">CUITs</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {state.data.entidades.map((entidad) => {
                   const facturacion = state.data.facturacionARCA.find(f => f.cuit === entidad.cuit);
                   return (
@@ -206,8 +206,8 @@ export function Dashboard() {
 
             {/* Puntos de Recaudación */}
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-1">Puntos de Recaudación</h2>
-              <div className="grid grid-cols-4 gap-2">
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Puntos de Recaudación</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                 {state.data.puntosRecaudacion.map((punto) => (
                   <PuntoRecaudacionCard
                     key={punto.id}
@@ -221,12 +221,12 @@ export function Dashboard() {
             </div>
           </div>
 
-          {/* Lado derecho - Gastos (20%) */}
-          <div className="w-[20%] space-y-2">
+          {/* Lado derecho - Gastos (100% en mobile, 20% en desktop) */}
+          <div className="w-full lg:w-[20%] space-y-2 sm:space-y-2">
             
             {/* Gastos Totales */}
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-1">Gastos Totales</h2>
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Gastos Totales</h2>
               <GastosCard
                 gastos={state.data.gastos}
                 gastosPorEntidad={state.data.gastosPorEntidad}
@@ -235,10 +235,10 @@ export function Dashboard() {
               />
             </div>
 
-            {/* Gastos por CUIT - En columna */}
+            {/* Gastos por CUIT - Responsive */}
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-1">Gastos por CUIT</h2>
-              <div className="space-y-1">
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Gastos por CUIT</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-1 lg:space-y-1 lg:grid-cols-none">
                 {state.data.entidades.map((entidad) => {
                   const gastosEntidad = state.data.gastosPorEntidad.find(g => g.entidadId === entidad.id);
                   const facturacionEntidad = state.data.facturacionARCA.find(f => f.cuit === entidad.cuit)?.total || 0;

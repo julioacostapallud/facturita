@@ -38,10 +38,10 @@ export function RecaudacionCard({ recaudaciones, recaudacionFacturas, onClick }:
       </CardHeader>
       
       <CardContent>
-        <div className="space-y-3">
-          {/* Una sola línea con los 3 items */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-success-200">
+        <div className="space-y-2 sm:space-y-3">
+          {/* Responsive grid para los 3 items */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
+            <div className="flex items-center justify-between p-2 sm:p-3 bg-white rounded-lg border border-success-200">
               <div className="flex items-center space-x-2">
                 <Receipt className="w-4 h-4 text-success-600" />
                 <span className="text-sm font-semibold text-success-700">Total Ingresos</span>
@@ -53,7 +53,7 @@ export function RecaudacionCard({ recaudaciones, recaudacionFacturas, onClick }:
               />
             </div>
             
-            <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-primary-200">
+            <div className="flex items-center justify-between p-2 sm:p-3 bg-white rounded-lg border border-primary-200">
               <div className="flex items-center space-x-2">
                 <Receipt className="w-4 h-4 text-primary-600" />
                 <span className="text-sm font-semibold text-primary-700">Ya Facturado</span>
@@ -65,7 +65,7 @@ export function RecaudacionCard({ recaudaciones, recaudacionFacturas, onClick }:
               />
             </div>
             
-            <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-warning-200">
+            <div className="flex items-center justify-between p-2 sm:p-3 bg-white rounded-lg border border-warning-200">
               <div className="flex items-center space-x-2">
                 <Clock className="w-4 h-4 text-warning-600" />
                 <span className="text-sm font-semibold text-warning-700">Pendiente</span>
