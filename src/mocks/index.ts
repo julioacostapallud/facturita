@@ -1,5 +1,5 @@
 // Configuración de MSW para desarrollo
-if (typeof window !== 'undefined' && import.meta.env?.DEV) {
+if (typeof window !== 'undefined' && (import.meta as any).env?.DEV) {
   const { worker } = await import('./browser');
   
   // Iniciar MSW

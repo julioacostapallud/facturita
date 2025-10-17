@@ -40,7 +40,8 @@ function App() {
       addToast({
         type: 'success',
         title: 'Factura emitida exitosamente',
-        message: `CAE: ${factura.caeFake} - Comprobante: ${factura.nroComprobante}`
+        message: `CAE: ${factura.caeFake} - Comprobante: ${factura.nroComprobante}`,
+        onClose: () => {}
       });
       
       // Mostrar modal de PDF después de un breve delay
@@ -54,7 +55,8 @@ function App() {
       addToast({
         type: 'error',
         title: 'Error al emitir factura',
-        message: error
+        message: error,
+        onClose: () => {}
       });
     };
 
