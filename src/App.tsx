@@ -60,12 +60,19 @@ function App() {
       });
     };
 
+    const handleShowPDF = (event: CustomEvent) => {
+      const { factura } = event.detail;
+      setPdfModal({ isOpen: true, factura });
+    };
+
     window.addEventListener('facturacion-success', handleFacturacionSuccess as EventListener);
     window.addEventListener('facturacion-error', handleFacturacionError as EventListener);
+    window.addEventListener('show-pdf', handleShowPDF as EventListener);
 
     return () => {
       window.removeEventListener('facturacion-success', handleFacturacionSuccess as EventListener);
       window.removeEventListener('facturacion-error', handleFacturacionError as EventListener);
+      window.removeEventListener('show-pdf', handleShowPDF as EventListener);
     };
   }, []);
 

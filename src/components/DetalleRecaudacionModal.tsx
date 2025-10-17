@@ -206,26 +206,31 @@ export function DetalleRecaudacionModal({
                       </td>
                       <td className="py-3 px-4 text-center">
                         <div className="flex items-center justify-center space-x-2">
-                          {pendiente > 0 && (
+                          {pendiente > 0 ? (
                             <Button
                               size="sm"
                               onClick={() => handleFacturar(recaudacion)}
                             >
                               Facturar
                             </Button>
-                          )}
-                          {facturasRecaudacion.length > 0 && (
+                          ) : facturasRecaudacion.length > 0 ? (
                             <Button
                               variant="secondary"
                               size="sm"
                               onClick={() => {
-                                // TODO: Mostrar modal con facturas de esta recaudación
-                                console.log('Ver facturas:', facturasRecaudacion);
+                                // Mostrar la primera factura (o la más reciente)
+                                const factura = facturasRecaudacion[0];
+                                if (factura) {
+                                  // Emitir evento para mostrar PDF
+                                  window.dispatchEvent(new CustomEvent('show-pdf', {
+                                    detail: { factura }
+                                  }));
+                                }
                               }}
                             >
-                              Ver Facturas ({facturasRecaudacion.length})
+                              Ver Factura
                             </Button>
-                          )}
+                          ) : null}
                         </div>
                       </td>
                     </tr>
