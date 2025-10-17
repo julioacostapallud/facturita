@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { DashboardProvider } from './context/DashboardContext';
 import { Dashboard } from './components/Dashboard';
-import { ToastContainer, Toast } from './components/ui/Toast';
+import { ToastContainer } from './components/ui/Toast';
 import { PDFViewerModal } from './components/PDFViewerModal';
 import { Factura } from './types';
 import './mocks'; // Inicializar MSW
@@ -11,6 +11,7 @@ interface AppToast {
   type: 'success' | 'error' | 'info' | 'warning';
   title: string;
   message?: string;
+  onClose: () => void;
 }
 
 function App() {
@@ -71,7 +72,10 @@ function App() {
       <div className="App">
         <Dashboard />
         <ToastContainer 
-          toasts={toasts} 
+          toasts={toasts.map(toast => ({
+            ...toast,
+            onClose: () => removeToast(toast.id)
+          }))} 
           onClose={removeToast}
         />
         

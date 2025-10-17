@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import { DollarSign, Receipt, Clock } from 'lucide-react';
 import { Recaudacion, RecaudacionFactura } from '../types';

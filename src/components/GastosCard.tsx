@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import { Receipt, DollarSign, FileText, TrendingDown } from 'lucide-react';
 import { Gasto, GastosPorEntidad } from '../types';

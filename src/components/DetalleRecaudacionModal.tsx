@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal } from './ui/Modal';
 import { Button } from './ui/Button';
 import { Card, CardContent } from './ui/Card';
@@ -21,7 +21,7 @@ interface DetalleRecaudacionModalProps {
 export function DetalleRecaudacionModal({
   isOpen,
   onClose,
-  recaudaciones,
+  recaudaciones: _recaudaciones,
   entidades,
   facturas,
   recaudacionFacturas,

@@ -1,7 +1,7 @@
-import React from 'react';
+// import React from 'react';
 import { Modal } from './ui/Modal';
 import { Button } from './ui/Button';
-import { Download, FileText, Calendar, Hash, Building2 } from 'lucide-react';
+import { Download, FileText, Calendar, Hash } from 'lucide-react';
 import { Factura } from '../types';
 
 interface PDFViewerModalProps {

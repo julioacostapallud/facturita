@@ -1,6 +1,6 @@
-import React from 'react';
+// import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
-import { Building2, DollarSign, FileText, TrendingDown } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 import { Entidad, GastosPorEntidad } from '../types';
 
 interface GastoEntidadCardProps {

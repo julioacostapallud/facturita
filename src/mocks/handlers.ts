@@ -70,7 +70,7 @@ export const handlers = [
 
   // Endpoint para facturar
   http.post('/api/facturar', async ({ request }) => {
-    const body: FacturarRequest = await request.json();
+    const body = await request.json() as FacturarRequest;
     
     // Validar que la recaudación existe y tiene saldo pendiente
     const recaudacion = mockData.recaudaciones.find(r => r.id === body.recaudacionId);
